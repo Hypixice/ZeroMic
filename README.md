@@ -1,61 +1,62 @@
-
-# ZeroMic
-
 <div align="center">
   <img src="https://x19.fp.ps.netease.com/file/69f5fc8dfcc7c18f65647c58EUpGTLbr07" width="128" height="128" alt="ZeroMic Logo">
   <h1>ZeroMic</h1>
-  <p><strong>手机免安装 · 电脑绿色单文件 · MD3 现代 UI 设计</strong></p>
-  <p>将你的智能手机瞬间变身为电脑的高保真无线麦克风</p>
-  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue?style=flat-square" alt="Platform">
-  <img src="https://img.shields.io/badge/License-GPLv3-green?style=flat-square" alt="License">
-  <img src="https://img.shields.io/badge/Built%20with-Python%20%7C%20WebRTC-yellow?style=flat-square" alt="Tech">
+  <p><strong>No App Required (Mobile) · Portable Single-Binary (PC) · Modern MD3 UI</strong></p>
+  <p>Transform your smartphone into a High-Fidelity wireless microphone for your PC instantly.</p>
+  
+  <p>
+    <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue?style=flat-square" alt="Platform">
+    <img src="https://img.shields.io/badge/License-GPLv3-green?style=flat-square" alt="License">
+    <img src="https://img.shields.io/badge/Built%20with-Python%20%7C%20WebRTC-yellow?style=flat-square" alt="Tech">
+  </p>
+
+  <p>
+    <b>English</b> | <a href="./README_zh.md">简体中文</a>
+  </p>
 </div>
 
-## 📖 简介
+---
 
-**ZeroMic** 是一款极简的跨平台无线麦克风传输工具。
-当你台式机没有麦克风，或者需要高质量的语音输入来进行游戏开黑（如 Discord、KOOK）或网络会议时，只需运行 ZeroMic，用手机访问局域网地址，即可利用手机的高性能麦克风进行毫秒级延迟的音频传输。
+## 📖 Introduction
 
-核心采用 P2P **WebRTC 技术**，音频数据完全在局域网内直连，**不经过任何外部服务器**，保证极致的安全与极低的延迟。
+**ZeroMic** is a minimalist, cross-platform wireless microphone transmission tool. 
 
+Whether your desktop lacks a dedicated mic or you need high-quality voice input for gaming (Discord, KOOK) or online meetings, ZeroMic has you covered. Simply run the desktop client and access the local URL via your mobile browser—no app installation required. 
 
-# ✨ 特点
-🚀 拿来就用：打包为单个可执行文件，无需安装，双击即用。
+Powered by **WebRTC P2P technology**, audio data is streamed directly within your local network (LAN) **without passing through external servers**, ensuring maximum privacy and millisecond-level latency.
 
-🔧 虚拟音频自动配置：自动创建虚拟音频设备，无需手动折腾驱动。
+## ✨ Key Features
 
-🐧 跨平台支持：Windows / Linux / macOS，一套代码三端运行。
+- **🚀 Out-of-the-Box:** Packaged as a single executable. No installation, no complicated setup—just double-click and go.
+- **🔧 Auto-Driver Config:** Automatically creates and configures virtual audio devices without manual intervention.
+- **🐧 True Cross-Platform:** Native support for Windows, Linux, and macOS from a single codebase.
+- **⚡ Ultra-Low Latency:** WebRTC-powered LAN streaming provides a near-wired audio experience.
+- **🎨 Modern Design:** Sleek Dark Mode with MD3 (Material Design 3) aesthetics, responsive interactions, and clear status feedback.
+- **🧹 Clean Uninstall:** Built-in cleanup feature ensures no driver residue or registry bloat is left behind.
 
-⚡ 延迟够低：WebRTC 局域网直连，通话跟插了线差不多。
+## 🚀 Quick Start
 
-🎨 看着舒服：深色界面，MD3 风格，交互跟手，状态反馈清楚。
+### Prerequisites
+- A PC running Windows 10+, Linux (PulseAudio/PipeWire), or macOS.
+- Your phone and PC must be connected to the **same Local Area Network (Wi-Fi)**.
 
-🧹 走也干净：内置清理功能，卸载不留残留。
+### Usage Steps
+1. Download the executable for your platform from the [Releases](https://github.com/hypixice/ZeroMic/releases) page.
+2. **Windows**: Right-click and **Run as Administrator**. **Linux/macOS**: Run directly (no root required).
+3. On first launch, ZeroMic will automatically set up the virtual audio device. (Windows may take 10-20s for driver setup; Linux/macOS is near-instant).
+4. Once configured, a URL (e.g., `https://192.168.x.x:5000`) will be displayed on the PC client.
+5. Enter this URL in your mobile browser (Safari, Chrome, or Edge recommended).
+6. In your game or voice chat software, set the **Microphone Input Device** to the virtual device created by ZeroMic.
+7. Start talking!
 
-
-## 🚀 快速开始
-
-### 准备工作
-- 一台 Windows 10+ / Linux（需 PulseAudio 或 PipeWire）/ macOS 电脑。
-- 手机与电脑需要处于 **同一个局域网（Wi-Fi）** 下。
-
-### 使用步骤
-1. 前往 [Releases](https://github.com/hypixice/ZeroMic/releases) 页面下载对应平台的可执行文件。
-2. **Windows**：右键以管理员身份运行。**Linux/macOS**：直接运行（无需管理员权限）。
-3. 首次启动时软件会自动配置虚拟音频设备。Windows 可能需要下载驱动（10-20 秒），Linux/macOS 秒级完成。
-4. 配置完毕后，电脑端会显示一个 URL 地址（如 `https://192.168.x.x:5000`）。
-5. 在手机浏览器（推荐 Safari / Chrome / Edge）中输入该地址。
-6. 在游戏或语音软件的设置中，将 **麦克风输入设备** 更改为软件提示的虚拟设备名称。
-7. 开始说话吧！
-
-## 🛠️ 开发者指南 (从源码构建)
+## 🛠️ Developer Guide (Build from Source)
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/hypixice/ZeroMic.git
+# 1. Clone the repository
+git clone [https://github.com/hypixice/ZeroMic.git](https://github.com/hypixice/ZeroMic.git)
 cd ZeroMic
 
-# 2. 创建并激活虚拟环境
+# 2. Create and activate virtual environment
 python -m venv .venv
 
 # Windows
@@ -67,32 +68,31 @@ pip install -r requirements-windows.txt
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# 3. 一键打包
+# 3. Build Executable
 # Windows
 .\build.bat
 
 # Linux / macOS
 ./build.sh
 ```
+The packaged binary will be located in the `dist/` directory.
 
-打包后的可执行文件位于 `dist/` 目录。
+## ⚠️ FAQ
 
-## ⚠️ 常见问题 (FAQ)
+**Q: Mobile browser shows "Connection is not private"?**
+A: This occurs because we use a self-signed certificate for LAN HTTPS (a mandatory requirement for WebRTC). Click "Advanced" -> "Proceed to..." in your browser to continue.
 
-**Q: 手机浏览器提示”不安全”或拒绝访问？**
-A: 因为我们使用了自签名证书来开启局域网 HTTPS（WebRTC 的强制要求）。请在浏览器拦截页面点击”高级” -> “继续访问”即可。
+**Q: Why did my PC sound stop working after setup? (Windows)**
+A: Windows sometimes sets the new virtual device as the default "Speaker". Click the volume icon in your taskbar and manually switch back to your original speakers/headphones.
 
-**Q: 为什么装完之后电脑突然没声音了？（Windows）**
-A: Windows 可能会将新安装的虚拟声卡设为默认扬声器。请点击电脑右下角的喇叭图标，手动切换回原来的扬声器设备。
+**Q: "pactl command not found" on Linux?**
+A: Ensure PulseAudio or PipeWire is installed. Most desktop distros include them. If missing: `sudo apt install pulseaudio-utils` (Debian/Ubuntu) or `sudo pacman -S pulseaudio` (Arch).
 
-**Q: Linux 下提示 pactl 命令不可用？**
-A: 请确认已安装 PulseAudio 或 PipeWire。大多数桌面发行版已自带。如果缺失：`sudo apt install pulseaudio-utils`（Debian/Ubuntu）或 `sudo pacman -S pulseaudio`（Arch）。
+**Q: Error when clicking "Uninstall Driver"? (Windows)**
+A: Ensure the software is running with **Administrator privileges**. It is recommended to restart your PC after uninstallation to completely clear the audio routing cache.
 
-**Q: 点击卸载驱动报错？（Windows）**
-A: 请确保软件是以**管理员身份**运行的。卸载完成后建议重启电脑以彻底清理音频路由表的残留。
-
-## 📄 许可协议
-本项目采用 [GPL-3.0 License](LICENSE) 许可协议。任何人都可以自由使用、修改和分发，但衍生作品必须同样开源并采用相同协议。
+## 📄 License
+This project is licensed under the [GPL-3.0 License](LICENSE). You are free to use, modify, and distribute the code, provided that all derivative works remain open-source under the same license.
 
 ---
 *Created with ❤️ by Hypixice Studio.*
