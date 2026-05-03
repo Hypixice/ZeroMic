@@ -29,9 +29,11 @@ jobs:
             arch: x86_64
             artifact_name: Linux-x64
           # macOS x64 & ARM64 (Apple Silicon)
-          - os: macos-latest
+          - os: macos-13
             arch: x86_64
             artifact_name: macOS-x64
+            
+          # macOS ARM64 (Apple Silicon) - 使用 macos-latest (默认就是 arm64)
           - os: macos-latest
             arch: arm64
             artifact_name: macOS-arm64
