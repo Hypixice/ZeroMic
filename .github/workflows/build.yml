@@ -4,26 +4,35 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch: # 方便你手动点按钮测试
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   build:
-    name: Build for ${{ matrix.os }}
+    name: Build ${{ matrix.os }} (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
         include:
+          # Windows x64
           - os: windows-latest
-            artifact_name: ZeroMic-Win.exe
+            arch: x64
+            artifact_name: ZeroMic-Windows-x64.exe
+          # Linux x64
           - os: ubuntu-latest
-            artifact_name: ZeroMic-Linux
+            arch: x64
+            artifact_name: ZeroMic-Linux-x64
+          # macOS x64 (Intel)
           - os: macos-latest
-            artifact_name: ZeroMic-macOS
+            arch: x64
+            artifact_name: ZeroMic-macOS-x64
+          # macOS arm64 (Apple Silicon)
+          - os: macos-latest
+            arch: arm64
+            artifact_name: ZeroMic-macOS-arm64
 
     steps:
       - name: Checkout Code
@@ -35,49 +44,61 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
+      - name: Get Version from Tag
+        shell: bash
+        run: |
+          # 提取版本号 (例如 v0.0.3)，如果没有标签则默认使用 v-dev
+          VERSION=${GITHUB_REF_NAME:-v-dev}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Install System Dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          # 注意：Ubuntu 24.04 需使用 4.1 版本
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev python3-dev
 
       - name: Install Python Dependencies
-        shell: bash # 统一使用 bash 避免 PowerShell 报错
+        shell: bash
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            if [ -f requirements-windows.txt ]; then
-              pip install -r requirements-windows.txt
-            fi
+            [ -f requirements-windows.txt ] && pip install -r requirements-windows.txt
           fi
           pip install pyinstaller
 
       - name: Build with PyInstaller
         shell: bash
         run: |
-          # 仅使用 .spec 文件，不再添加 --name 等参数
-          pyinstaller --noconfirm main.spec
+          # 运行构建，注意：macOS 使用 --target-arch 处理不同架构
+          ARCH_ARGS=""
+          if [ "${{ matrix.os }}" = "macos-latest" ]; then
+            ARCH_ARGS="--target-arch ${{ matrix.arch }}"
+          fi
+          
+          pyinstaller --noconfirm $ARCH_ARGS main.spec
 
-      - name: Rename Output (Optional)
+      - name: Rename and Prepare Artifact
         shell: bash
         run: |
-          # 如果你的 spec 默认生成的文件名不是矩阵要求的，可以在这里改名
-          # 假设 spec 生成的是 dist/main 或 dist/ZeroMic
+          # 组装最终文件名：项目名-版本号-系统-架构
+          FINAL_NAME="ZeroMic-${{ env.VERSION }}-${{ matrix.artifact_name }}"
           cd dist
-          mv * "${{ matrix.artifact_name }}" || true 
+          # 将 spec 生成的默认文件名（假设是 ZeroMic）重命名为带版本的格式
+          mv ZeroMic* "$FINAL_NAME" || mv main* "$FINAL_NAME"
+          echo "FINAL_RELEASE_PATH=dist/$FINAL_NAME" >> $GITHUB_ENV
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: dist/${{ matrix.artifact_name }}*
+          path: ${{ env.FINAL_RELEASE_PATH }}
 
   release:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -87,8 +108,6 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            ./artifacts/ZeroMic-Win.exe/ZeroMic-Win.exe
-            ./artifacts/ZeroMic-Linux/ZeroMic-Linux
-            ./artifacts/ZeroMic-macOS/ZeroMic-macOS
+          # 使用通配符自动包含所有命名的二进制文件
+          files: ./artifacts/**/*
           generate_release_notes: true
