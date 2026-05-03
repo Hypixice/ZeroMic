@@ -17,22 +17,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Windows x64
+          # Windows x64 & ARM64
           - os: windows-latest
-            arch: x64
-            artifact_name: ZeroMic-Windows-x64.exe
+            arch: x86_64
+            artifact_name: Windows-x64.exe
+          - os: windows-latest
+            arch: arm64
+            artifact_name: Windows-arm64.exe
           # Linux x64
           - os: ubuntu-latest
-            arch: x64
-            artifact_name: ZeroMic-Linux-x64
-          # macOS x64 (Intel)
+            arch: x86_64
+            artifact_name: Linux-x64
+          # macOS x64 & ARM64 (Apple Silicon)
           - os: macos-latest
-            arch: x64
-            artifact_name: ZeroMic-macOS-x64
-          # macOS arm64 (Apple Silicon)
+            arch: x86_64
+            artifact_name: macOS-x64
           - os: macos-latest
             arch: arm64
-            artifact_name: ZeroMic-macOS-arm64
+            artifact_name: macOS-arm64
 
     steps:
       - name: Checkout Code
@@ -44,12 +46,9 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Get Version from Tag
+      - name: Get Version
         shell: bash
-        run: |
-          # 提取版本号 (例如 v0.0.3)，如果没有标签则默认使用 v-dev
-          VERSION=${GITHUB_REF_NAME:-v-dev}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        run: echo "VERSION=${GITHUB_REF_NAME:-v-dev}" >> $GITHUB_ENV
 
       - name: Install System Dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -69,30 +68,27 @@ jobs:
 
       - name: Build with PyInstaller
         shell: bash
+        env:
+          # 核心改动：通过环境变量将架构传给 main.spec
+          TARGET_ARCH: ${{ matrix.arch }} 
         run: |
-          # 运行构建，注意：macOS 使用 --target-arch 处理不同架构
-          ARCH_ARGS=""
-          if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            ARCH_ARGS="--target-arch ${{ matrix.arch }}"
-          fi
-          
-          pyinstaller --noconfirm $ARCH_ARGS main.spec
+          # 命令行必须极其干净，不能有任何多余参数
+          pyinstaller --noconfirm main.spec
 
-      - name: Rename and Prepare Artifact
+      - name: Rename and Prepare
         shell: bash
         run: |
-          # 组装最终文件名：项目名-版本号-系统-架构
           FINAL_NAME="ZeroMic-${{ env.VERSION }}-${{ matrix.artifact_name }}"
           cd dist
-          # 将 spec 生成的默认文件名（假设是 ZeroMic）重命名为带版本的格式
-          mv ZeroMic* "$FINAL_NAME" || mv main* "$FINAL_NAME"
-          echo "FINAL_RELEASE_PATH=dist/$FINAL_NAME" >> $GITHUB_ENV
+          # 兼容不同系统的默认输出名并重命名
+          mv ZeroMic.exe "$FINAL_NAME" || mv ZeroMic "$FINAL_NAME" || mv main* "$FINAL_NAME"
+          echo "FINAL_PATH=dist/$FINAL_NAME" >> $GITHUB_ENV
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: ${{ env.FINAL_RELEASE_PATH }}
+          path: ${{ env.FINAL_PATH }}
 
   release:
     name: Create GitHub Release
@@ -108,6 +104,5 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          # 使用通配符自动包含所有命名的二进制文件
           files: ./artifacts/**/*
           generate_release_notes: true
