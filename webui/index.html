@@ -125,19 +125,23 @@
 </head>
 <body>
 
+
 <div class="app-container">
-    <div class="header">
+    <div class="header" style="position: relative;">
+        <button onclick="toggleLanguage()" style="position: absolute; right: 0; top: 0; background: transparent; border: 1px solid #333; color: #aaa; padding: 2px 10px; border-radius: 12px; cursor: pointer; font-size: 12px;">
+            <span id="lang-switch-text">EN</span>
+        </button>
         
         <h1><mdui-icon name="podcasts" style="font-size: 20px; margin-right: 10px; color: rgb(var(--mdui-color-primary));"></mdui-icon>ZeroMic</h1>
-        <p>Client Mode | v0.0.2 内部测试 | by：Hypixice</p>
+        <p>Client Mode | v0.0.3 | by：Hypixice</p>
     </div>
 
     <div class="status-card">
         <div class="status-info">
-            <span class="status-title">主机连接状态</span>
+            <span class="status-title" data-i18n="m_host_status">主机连接状态</span>
             <span class="status-value">
                 <div class="dot disconnected" id="connection-dot"></div>
-                <span id="connection-text">等待连接...</span>
+                <span id="connection-text" data-i18n="m_wait_conn">等待连接...</span>
             </span>
         </div>
         <mdui-icon name="computer" style="opacity: 0.7;"></mdui-icon>
@@ -156,7 +160,7 @@
         </mdui-button-icon>
     </div>
     
-    <div class="status-text" id="status-label" style="color: var(--color-initial);">点击授权并连接</div>
+    <div class="status-text" id="status-label" style="color: var(--color-initial);" data-i18n="m_tap_connect">点击授权并连接</div>
 </div>
 
 <script>
@@ -171,11 +175,57 @@ const socket = io(window.location.origin);
     let peerConnection;
     const rtcConfig = { iceServers: [] }; 
 
+
+
+    let i18nData = {};
+    // 获取手机系统语言，默认回退到英文
+    let currentLang = navigator.language.toLowerCase().startsWith('zh') ? 'zh_cn' : 'en_us';
+
+    // 翻译辅助函数 (供 JS 动态文字使用)
+    function t(key) {
+        return i18nData[key] || key;
+    }
+
+    // 渲染页面静态文本
+    function renderI18n() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (i18nData[key]) {
+                el.innerHTML = i18nData[key];
+            }
+        });
+        
+        // 更新切换按钮的文字
+        const langIcon = document.getElementById('lang-switch-text');
+        if(langIcon) langIcon.innerText = currentLang === 'zh_cn' ? 'EN' : '中';
+    }
+
+    // 从服务器异步拉取 JSON (复用电脑端的 lang 文件夹)
+    async function loadLanguage(lang) {
+        try {
+            // 加入时间戳防止手机浏览器强缓存
+            const response = await fetch(`/lang/${lang}.json?t=${new Date().getTime()}`);
+            if (!response.ok) throw new Error('网络响应异常');
+            
+            i18nData = await response.json();
+            currentLang = lang;
+            renderI18n(); 
+        } catch (error) {
+            console.error(`加载语言包 ${lang}.json 失败:`, error);
+        }
+    }
+
+    // 切换语言
+    function toggleLanguage() {
+        const nextLang = currentLang === 'zh_cn' ? 'en_us' : 'zh_cn';
+        loadLanguage(nextLang);
+    }
+
     socket.on('connect', () => {
         socket.emit('join', { role: 'mobile' });
         document.getElementById('connection-dot').classList.replace('disconnected', 'connected');
         const text = document.getElementById('connection-text');
-        text.innerText = '已连接到主机';
+        text.innerText = t('m_connected');
         text.style.color = '#4CAF50';
     });
 
@@ -217,7 +267,11 @@ const socket = io(window.location.origin);
         }
     }
 
-    
+
+    document.addEventListener('DOMContentLoaded', async () => {
+            await loadLanguage(currentLang);
+        });
+
     document.addEventListener('visibilitychange', async () => {
         if (wakeLock !== null && document.visibilityState === 'visible' && currentState === 'active') {
             await requestWakeLock();
@@ -286,7 +340,11 @@ const socket = io(window.location.origin);
                 requestWakeLock(); 
 
             } catch (err) {
-                mdui.alert({ headline: '权限被拒绝', description: '请允许浏览器访问麦克风。', confirmText: '好' });
+                mdui.alert({ 
+                    headline: t('m_alert_title'), 
+                    description: t('m_alert_desc'), 
+                    confirmText: t('m_alert_ok') 
+                });
             }
         } 
         
@@ -320,17 +378,17 @@ const socket = io(window.location.origin);
     });
 
     
-    function updateUI() {
+function updateUI() {
         micBtn.className = `mic-button ${currentState}`;
         volumeRing.className = `volume-ring ${currentState}`;
         
         if (currentState === 'active') {
             micIcon.setAttribute('name', 'mic');
-            statusLabel.innerText = '麦克风传输中...';
+            statusLabel.innerText = t('m_mic_active'); // 替换这里
             statusLabel.style.color = 'rgb(var(--mdui-color-primary))';
         } else if (currentState === 'muted') {
             micIcon.setAttribute('name', 'mic_off');
-            statusLabel.innerText = '已静音';
+            statusLabel.innerText = t('m_mic_muted'); // 替换这里
             statusLabel.style.color = 'var(--color-muted)';
         }
     }
@@ -339,7 +397,7 @@ const socket = io(window.location.origin);
     setTimeout(() => {
         document.getElementById('connection-dot').classList.replace('disconnected', 'connected');
         const text = document.getElementById('connection-text');
-        text.innerText = '已连接到主机';
+        text.innerText = t('m_connected');
         text.style.color = '#4CAF50';
     }, 1500);
 </script>

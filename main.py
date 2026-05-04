@@ -18,7 +18,7 @@ else:
     base_path = os.path.dirname(os.path.abspath(__file__))
 
 # 常量
-VERSION = "v0.0.2"
+VERSION = "v0.0.3"
 
 # 平台检测
 platform = get_platform()
@@ -185,6 +185,6 @@ if __name__ == '__main__':
         )
         webview.start(
             gui=platform.gui_backend,
-            debug=False,
+            debug=True,
             icon=icon_path
         )
