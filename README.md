@@ -17,6 +17,20 @@
 
 ---
 
+### 🌍 Help Us Translate ZeroMic!
+
+We need your help to make ZeroMic available in more languages!  
+Take a look at the existing language files in the `webui/lang/` directory:
+- `en_us.json` (English)
+- `zh_cn.json` (Simplified Chinese)
+
+To contribute a new translation or improve an existing one:
+1. Create a new JSON file following the same structure (e.g. `ja_jp.json`).
+2. Submit a Pull Request with your changes.
+
+Every contribution helps us reach more users around the world — thank you! ❤️
+---
+
 ## 📖 Introduction
 
 **ZeroMic** is a minimalist, cross-platform wireless microphone transmission tool. 
@@ -33,19 +47,6 @@ Powered by **WebRTC P2P technology**, audio data is streamed directly within you
 - **⚡ Ultra-Low Latency:** WebRTC-powered LAN streaming provides a near-wired audio experience.
 - **🎨 Modern Design:** Sleek Dark Mode with MD3 (Material Design 3) aesthetics, responsive interactions, and clear status feedback.
 - **🧹 Clean Uninstall:** Built-in cleanup feature ensures no driver residue or registry bloat is left behind.
-
-### 🌍 Help Us Translate ZeroMic!
-
-We need your help to make ZeroMic available in more languages!  
-Take a look at the existing language files in the `webui/lang/` directory:
-- `en_us.json` (English)
-- `zh_cn.json` (Simplified Chinese)
-
-To contribute a new translation or improve an existing one:
-1. Create a new JSON file following the same structure (e.g. `ja_jp.json`).
-2. Submit a Pull Request with your changes.
-
-Every contribution helps us reach more users around the world — thank you! ❤️
 
 ## 🚀 Quick Start
 
