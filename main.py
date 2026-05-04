@@ -185,6 +185,6 @@ if __name__ == '__main__':
         )
         webview.start(
             gui=platform.gui_backend,
-            debug=True,
+            debug=False,
             icon=icon_path
         )
